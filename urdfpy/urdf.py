@@ -3226,9 +3226,13 @@ class URDF(URDFType):
                     if visual.geometry.mesh is not None:
                         if visual.geometry.mesh.scale is not None:
                             S = np.eye(4, dtype=np.float64)
-                            S[:3,:3] = np.diag(visual.geometry.mesh.scale)
+                            S[:3, :3] = np.diag(visual.geometry.mesh.scale)
                             pose = pose.dot(S)
-                    fk[mesh] = pose
+                    fk[mesh] = {"pose": pose}
+                    if not hasattr(mesh.visual, "material") and visual.material is not None:
+                        if visual.material.color is not None:
+                            color = visual.material.color
+                            fk[mesh]["color"] = color
         return fk
 
     def visual_trimesh_fk_batch(self, cfgs=None, links=None):
